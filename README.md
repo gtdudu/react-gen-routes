@@ -1,7 +1,7 @@
 # @lmdc/react-gen-routes
 
-An easy way to manage client routing for react app similar to the one in [next.js](https://github.com/zeit/next.js).
-Automates creation of [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) config file based on file tree.
+An easy way to manage client routing for react app similar to the one in [next.js](https://github.com/zeit/next.js).  
+Automates creation of [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) config file based on file tree.  
 Automatic reloading on file system events.
 
 
@@ -11,7 +11,7 @@ If you try to create a react app that works with server side rendering you will 
 
 If you've checked out next.js you've seen that they automatically manage routing based on a special directory architecture (pages/). I very much like this idea as it makes it really easy to understand what's going on with just a few simple rules!
 
-This package attempts to replicate this feature and only this features.
+This package attempts to replicate this feature and only this features.  
 Everything else is up to you.
 
 So why use this ?
@@ -25,7 +25,7 @@ So why use this ?
 
 ## Installation
 
-Only through cloning with git for now.
+Only through cloning with git for now.  
 Npm package coming as soon as i have some tests set up.
 
 ## Usage
@@ -44,7 +44,7 @@ Npm package coming as soon as i have some tests set up.
 
 ### Using --templatesDir option
 
-This package assumes you're using [@loadable/component](https://github.com/gregberge/loadable-components) for code splitting.
+This package assumes you're using [@loadable/component](https://github.com/gregberge/loadable-components) for code splitting.  
 Each route will have a component field that looks like this:
 
 ```
@@ -72,13 +72,13 @@ By default our *imports* template looks like this.
 ```
 import loadable from '@loadable/component';
 ```
-This will be appended on top of the routes config file.
+This will be appended on top of the routes config file.  
 This can be as many lines as you want.
 
 ### Using --watch option
 
-If you use --watch the package will use chokidar to listen for any file system events in input directory and recompute routes config accordingly.
-This watch is blocking so you need to use [npm-run-all]([https://github.com/mysticatea/npm-run-all](https://github.com/mysticatea/npm-run-all)) or [concurrently](https://github.com/kimmobrunfeldt/concurrently) to run both your server and the watch.
+If you use --watch the package will use chokidar to listen for any file system events in input directory and recompute routes config accordingly.  
+This watch is blocking so you need to use [npm-run-all]([https://github.com/mysticatea/npm-run-all](https://github.com/mysticatea/npm-run-all)) or [concurrently](https://github.com/kimmobrunfeldt/concurrently) to run both your server and the watch.  
 It's also a good idea to wait for config file to be created before starting anything that relies on it.. you can use [wait-on](https://github.com/jeffbski/wait-on) for this.
 
 I tend to use this:
@@ -111,8 +111,8 @@ This section assumes you use `--inputDir ./pages`
 
 ### Dynamic file/folder
 
-We need to distinguish dynamic file/folder from non-dynamic file/folder.
-If this sounds complicated, trust me, it's not.
+We need to distinguish dynamic file/folder from non-dynamic file/folder.  
+If this sounds complicated, trust me, it's not.  
 **A dynamic file/folder has its name inclosed between brackets!**
 
 ```
@@ -205,8 +205,8 @@ pages/
 // index.js component will be accessible on url /:id
 ```
 
-The name of your dynamic file/folder matters.
-Since we're not wrapping any react function, in the examples above you'll get back your parameter using regular [react-router]() `useParams` function.
+The name of your dynamic file/folder matters.  
+Since we're not wrapping any react function, in the examples above you'll get back your parameter using regular [react-router]() `useParams` function.  
 Like so:
 ```
   let { id } = useParams();
@@ -216,9 +216,9 @@ Like so:
 
 ### Creating a catch all route
 
-A catch all route is just like a dynamic routes.
-To create one the convention is to name your file `[*]`.
-The only difference is that they resolve to path `*` and not `:*`
+A catch all route is just like a dynamic routes.  
+To create one the convention is to name your file `[*]`.  
+The only difference is that they resolve to path `*` and not `:*`  
 
 ```
 /pages/
@@ -265,7 +265,7 @@ pages/
     nested-component.js       -> /:id/nested-component (exact: true)
     [*].js 					  -> /:id/*
 ```
-**Do not forget to use [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) `renderRoutes` function in your wrapper !**
+**Do not forget to use [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) `renderRoutes` function in your wrapper !**  
 Otherwise your childs won't be rendered.
 
 ### Edge case
