@@ -1,7 +1,7 @@
 {
   "name": "@lmdc/react-gen-routes",
   "version": "0.9.0",
-  "description": "Generate react-router-config routes.js based on folder architecture",
+  "description": "Generate config for react-router-config based on directory architecture",
   "bin": {
     "lmdc-rgr": "src/bin/index.js"
   },
@@ -14,6 +14,22 @@
     "postbuild": "cp -Rp src/templates dist/src && cp package.json dist && cp -Rp src/tmp dist/tmp",
     "build": "babel ./src/ -d ./dist/src --ignore templates"
   },
+  "homepage": "https://github.com/gtdudu/react-gen-routes#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gtdudu/react-gen-routes.git"
+  },
+  "keywords": [
+    "react-router-config",
+    "@loadable/component",
+    "react",
+    "next",
+  ],
+  "bugs": {
+    "url": "https://github.com/gtdudu/react-gen-routes/issues"
+  },
+  "author": "tommy durand",
+  "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.8.7",
     "bluebird": "^3.7.2",
