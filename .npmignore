@@ -1,0 +1,8 @@
+node_modules
+src
+templates/
+.babelrc
+.eslintignore
+.gitignore
+README.md
+.eslintrc

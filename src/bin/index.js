@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+import _ from 'lodash';
+import getopts from 'getopts';
+
+import Engine from '../lib/';
+
+const start = async(args) => {
+
+  const options = getopts(process.argv.slice(2), {
+    alias: {
+      intputDir: 'i',
+      outputDir: 'o',
+      filename: 'f',
+      templatesDir: 't',
+      watch: 'w'
+    },
+    string: ['i', 'o', 'f'],
+    boolean: ['w'],
+    default: {
+      filename: 'routes.js',
+      watch: false,
+    },
+  });
+
+  const engine = new Engine({
+    inputDir: options.intputDir,
+    outputDir: options.outputDir,
+    watch: options.watch,
+    filename: options.filename,
+    templatesDir: options.templatesDir,
+  });
+
+  try {
+    await engine.run();
+    console.log('All good: routes.js has been generated');
+  } catch (e) {
+    console.log('engine failed to run', e);
+  }
+
+};
+
+start();

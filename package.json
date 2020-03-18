@@ -1,0 +1,34 @@
+{
+  "name": "@lmdc/react-gen-routes",
+  "version": "0.9.0",
+  "description": "Generate react-router-config routes.js based on folder architecture",
+  "bin": {
+    "lmdc-rgr": "src/bin/index.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --watch ./src ./src/ --exec 'npm run build'",
+    "prebuild": "rm -rf ./dist",
+    "postbuild": "cp -Rp src/templates dist/src && cp package.json dist && cp -Rp src/tmp dist/tmp",
+    "build": "babel ./src/ -d ./dist/src --ignore templates"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.8.7",
+    "bluebird": "^3.7.2",
+    "chokidar": "^3.3.1",
+    "core-js": "^3.6.4",
+    "ejs": "^3.0.1",
+    "getopts": "^2.2.5",
+    "lodash": "^4.17.15",
+    "nodemon": "^2.0.2"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7"
+  }
+}
