@@ -25,6 +25,9 @@ class Engine {
       throw new Error('[Engine.constructor] invalid options.');
     }
 
+
+    // coma separated list of accepted extensions or undefined
+    this._extensions = options.extensions;
     // folder that we need to analyse
     this._inputDir = options.inputDir;
     // folder where we want to write routes file
@@ -44,8 +47,25 @@ class Engine {
     };
   }
 
+  setExtentions(){
+
+    if (!this._extensions) {
+      this._extensions = ['js'];
+      return;
+    }
+
+    const extensions = _.split(this._extensions, ',');
+    const trimed = _.map(_.compact(extensions), (ext) => {
+      return _.trim(ext);
+    })
+    this._extensions = trimed;
+  }
+
   async run() {
 
+    // get accepted files extensions
+    this.setExtentions();
+    
     // create uniq temporary directory
     this._tmpFolder = await fsu.createTmpDir();
 
@@ -167,7 +187,7 @@ class Engine {
   // given a directory path and a list of filenames in it
   // returns Array<Object> { name, isDir, filePath }
   // sorted with files first and folder second
-  // fileNames that do not match component convention (1 dot) or that do not end in '.js' won't be returned
+  // fileNames that do not match component convention (1 dot) or that do not have an extension listed in _extensions won't be returned
   async sortAndFilter(from, names) {
 
     const files = [];
@@ -192,7 +212,8 @@ class Engine {
       // or a path to a function ?
       // should at least be able to select extension
       const splitted = _.split(name, '.');
-      if (_.size(splitted) !== 2 || _.last(splitted) !== 'js') {
+      if (_.size(splitted) !== 2 ||
+      !_.includes(this._extensions, _.last(splitted))) {
         return;
       }
 
