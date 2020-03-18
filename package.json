@@ -23,7 +23,7 @@
     "react-router-config",
     "@loadable/component",
     "react",
-    "next",
+    "next"
   ],
   "bugs": {
     "url": "https://github.com/gtdudu/react-gen-routes/issues"
