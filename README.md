@@ -38,9 +38,11 @@ Npm package coming as soon as i have some tests set up.
   - -o or --outputDir: relative path from project root to config output folder
 
 * Optional args:
+  - -e or --extensions: coma separated list of accepted extensions, default to 'js'
   - -f or --filename: whatever you want the config file to be named, default to `routes.js`
   - -t or --templatesDir: path to `component` and `imports` templates folder
   - -w or --watch: boolean, set to true for automatic recomputing of config file on inputDir file system events (via chokidar), default to false
+
 
 ### Using --templatesDir option
 
@@ -102,6 +104,16 @@ npm i --save-dev wait-on
 ```
 "prebuild": "lmdc-rgr -o ./src/shared/ -i ./src/shared/pages -f my-routes.js",
 
+```
+
+## Name convention
+
+All filenames with more than one dot will be ignored while constructing routes file.
+
+```
+pages/
+  component.js            -> this is ok
+  component.styles.js     -> this will be ignored
 ```
 
 ## Routing
