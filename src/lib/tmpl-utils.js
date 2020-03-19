@@ -60,13 +60,9 @@ export async function fillRoutesTemplate(tmpDir, templateDir) {
     throw e;
   }
 
-  if (_.size(templatedLines) !== 1) {
-    console.log('expected one template string with "<%= componentPath %>" variable');
-    console.log('got', templatedLines, 'instead');
-    throw new Error(`${templateDir}/component does not exist or is an empty file`);
-  }
-
-  const template = ejs.compile(templatedLines[0]);
+  const templates = _.map(templatedLines, (line) => {
+    return ejs.compile(line);
+  });
 
   const res = [];
   await Promise.each(routesLines, async(line) => {
@@ -91,21 +87,18 @@ export async function fillRoutesTemplate(tmpDir, templateDir) {
       `./${value}`
     ;
 
-
-    // process template file
-    const templatedLine = template({
-      componentPath: relativePath,
+    _.each(templates, (template) => {
+      // process template file
+      const templatedLine = template({
+        componentPath: relativePath,
+      });
+      // add spaces back
+      let spaces = '';
+      for (var i = 0; i < diffLen; i++) {
+        spaces += ' ';
+      }
+      res.push(`${spaces}${templatedLine}`);
     });
-
-    // add spaces back
-    let spaces = '';
-    for (var i = 0; i < diffLen; i++) {
-      spaces += ' ';
-    }
-    res.push(`${spaces}${templatedLine}`);
-
-    const componentPath = `${spaces}componentPath: "${relativePath}",`;
-    res.push(componentPath);
   });
 
   // tweek export

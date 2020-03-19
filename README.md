@@ -64,8 +64,11 @@ component: loadable(props => import('<%= componentPath %>')),
 
 ```
 
-`<%= componentPath %>` will be populated using ejs templating with relative path between your output file and the component path.
-**`component` template must be a one liner.**
+`<%= componentPath %>` will be populated using ejs templating with relative path between your output file and the component path.  
+This file can be as many lines as you want, they will be added to every route object.  
+
+**Avoid using field `path`, `exact` and `routes` as this lib already takes care of those.  
+Also, you need to have a field `component` in order for routes config to be correct.**
 
 - imports
 
@@ -223,7 +226,7 @@ Like so:
 ```
   let { id } = useParams();
 ```
-**You can create only one dynamic file and one dynamic folder per directory**
+**You can create only one dynamic file and one dynamic folder per directory**  
 **Extraneous dynamic files/folders will be ignored with no guarantee of which ones**
 
 ### Creating a catch all route
@@ -323,7 +326,7 @@ pages/
     a.js
 ```
 
-`index.js` would resolve to `/:id`
+`index.js` would resolve to `/:id`  
 `a.js` would resolve to `/:id/a`
 
 It's virtually the same thing but you don't have to track two different names for the same params.
