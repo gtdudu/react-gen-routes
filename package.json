@@ -11,8 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch ./src ./src/ --exec 'npm run build'",
     "prebuild": "rm -rf ./dist",
-    "postbuild": "cp -Rp src/templates dist/ && cp package.json dist",
-    "build": "babel ./src/ -d ./dist/ --ignore templates"
+    "postbuild": "cp package.json dist",
+    "build": "cp -Rp ./src/ ./dist"
   },
   "homepage": "https://github.com/gtdudu/react-gen-routes#readme",
   "repository": {
@@ -36,9 +36,11 @@
     "chokidar": "^3.3.1",
     "core-js": "^3.6.4",
     "ejs": "^3.0.1",
+    "esm": "^3.2.25",
     "getopts": "^2.2.5",
     "lodash": "^4.17.15",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "react": "^16.13.1"
   },
   "devDependencies": {
     "@babel/node": "^7.8.7",

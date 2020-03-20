@@ -1,3 +1,4 @@
+import React from 'react';
 import Promise from 'bluebird';
 import fs from 'fs';
 import path from 'path';
@@ -65,7 +66,7 @@ class Engine {
 
     // get accepted files extensions
     this.setExtentions();
-    
+
     // create uniq temporary directory
     this._tmpFolder = await fsu.createTmpDir();
 
@@ -475,6 +476,21 @@ class Engine {
 
       const item = items.files[name];
 
+      const p = path.resolve('.', item.filePath);
+
+      try {
+        const mod = require(p);
+        console.log('OK');
+      } catch (e) {
+        console.log(e);
+      }
+      // const mod = import(p).then((res) => {
+      //   console.log('OKOK');
+      // }).catch((err) => {
+      //   console.log('NOP', err.message);
+      //
+      // });
+      //
       if (!item.hasNested) {
 
         const file = {
