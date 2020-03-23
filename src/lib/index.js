@@ -321,6 +321,7 @@ class Engine {
     // track how many dynamic files and folders we find
     let dynamicFolderCount = 0;
     let dynamicFileCount = 0;
+    let dynamicIndexDir = false;
 
     // remove _inputDir from parent folder path
     // handle _inputDir starting with './'
@@ -339,6 +340,7 @@ class Engine {
       if (item.isDir) {
         d.nameNoExt = item.name;
         d.isNested = this.isNested(_.without(items, item), d.nameNoExt);
+        dynamicIndexDir = d.isNested && d.nameNoExt === 'index';
       }
 
       // file base info
@@ -346,6 +348,12 @@ class Engine {
         d.nameNoExt = stru.stripExtension(item.name);
         d.hasNested = this.hasNested(_.without(items, item), d.nameNoExt);
         d.routePath = await stru.createRoutePath(this._inputDir, from, d.nameNoExt);
+      }
+
+      // prevent files and folders named * as they would create conflicting routes
+      if (item.nameNoExt === '*') {
+        console.log(`skipping '${item.filePath}' (* is a forbidden name).`);
+        return;
       }
 
       // check if dynamic
@@ -360,18 +368,10 @@ class Engine {
       // skip index file if we are in a dynamic folder and parent folder holds
       // a dynamic file since they would virtually resolve to the same react router path
       //
-      // - Not nested:
       // test/
       //  [id].js     -> /test/:id
       //  [param]
       //    index.js  -> /test/:param
-      //
-      //
-      // - Nested:
-      // test/
-      //  [id].js     -> /test/:id
-      //  [id]
-      //    index.js  -> /test/:id
       if (d.nameNoExt === 'index' && parentDirInfo.hasDynamicFile && parentDirInfo.isDynamicDir) {
         console.log(`skipping file ${item.filePath} (conflict with parent folder dynamic file)`);
         return;
@@ -401,33 +401,13 @@ class Engine {
         }
       }
 
-      //
       if (!item.isDir) {
 
         const relativeFolderPath = path.join(this._relativePath, cleanInput);
         d.relativeFilePath = `${relativeFolderPath}/${item.name}`;
 
-        if (parentDirInfo.isNestedDir && d.nameNoExt === 'index') {
-          // skip index file if parent folder is nested as it would result in duplicate react router path
-          //
-          // test/
-          //   a.js         -> /test/a
-          //   a/
-          //     index.js   -> /test/a
-          console.log(`skipping file ${item.filePath} (would create duplicate route)`);
-          return;
-        }
-
         if (!d.hasNested) {
           return d;
-        }
-
-        // make sure the linked folder is not empty
-        const isFolderOk = await fsu.hasFilesSkipIndex(path.join(from, d.nameNoExt));
-
-        if (!isFolderOk) {
-          console.log(`skipping folder ${item.filePath} (index file would create duplicate route)`);
-          return;
         }
 
         return d;
@@ -444,7 +424,26 @@ class Engine {
     });
 
     // remove falsy values
-    const keepInfos = _.compact(infos);
+    let keepInfos = _.compact(infos);
+
+    // if we have dynamic index folder, all other dynamic path will never be reached since we have to set exact false to make nested routes working and the route will end up being first in the config object..
+    // => remove all other file/folder and log warning
+    if (dynamicIndexDir) {
+
+      const keep = _.filter(keepInfos, (info) => {
+
+        if (info.nameNoExt === 'index') {
+          return true;
+        }
+
+        const type = info.isDir ? 'folder' : 'file';
+        console.log(`skipping ${type} ${info.filePath} (nested index would prevent this route from ever being reached)`);
+        return
+      });
+
+      return [keep, dynamicFileCount, dynamicFolderCount];
+    }
+
     return [keepInfos, dynamicFileCount, dynamicFolderCount];
   }
 
@@ -604,7 +603,6 @@ class Engine {
 
     // list everything in directory with extensive info
     const [items, hasDynamicFile] = await this.lsDetails(from, parentDirInfo);
-
     const [filesStart, filesEnd ] = await this.handleFiles(items);
     const [foldersStart, foldersEnd ] = await this.handleFolders(items, hasDynamicFile);
 

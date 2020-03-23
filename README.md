@@ -169,13 +169,17 @@ If watch mode is on, the results will be cached to enhance performance.
 
 ## Name convention
 
-All filenames with more than one dot will be ignored while constructing routes file.
+You cannot name a file `*.js` nor a folder `*`.  
+If you do they will be ignored.
+
+Furthermore, all filenames with more than one dot will be ignored while constructing routes file.
 
 ```
 pages/
   component.js            -> this is ok
   component.styles.js     -> this will be ignored
 ```
+
 
 ## Routing
 
@@ -197,9 +201,8 @@ Do not use any brackets for non dynamic files/folders.
 
 ````
 // ALL those are considered incorect and will be will be ignored
-
-[nop
-no]p
+[nop/
+no]p/
 n[op].js
 [no]p.js
 ...
@@ -320,16 +323,7 @@ pages/
     // all components in here will be sub routes of wrapper.js
 ```
 
-- Nesting also works with index.js files
-
-```
-pages/
-  index.js                    -> /
-  index/
-    nested-component.js       -> /nested-component
-```
-
-- and with dynamic files.
+- Nesting also works with dynamic files.
 
 ```
 pages/
@@ -338,7 +332,25 @@ pages/
     nested-component.js       -> /:id/nested-component (exact: true)
     [*].js 					  -> /:id/*
 ```
-**Do not forget to use [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) `renderRoutes` function in your wrapper !**  
+
+-  and with index.js files even tho this is a **special case**.
+
+If used, all other files and folders in current directory will be ignored.  
+This is necessary because the wrapper needs `exact: false` to make nested routes working properly. Since indexes need to be first on their level this would prevent all other routes from ever showing up anyway.
+
+```
+pages/
+  test.js                     -> will be ignored
+  folder/
+    index.js                  -> will be ignored
+  index.js                    -> /
+  index/
+    index.js                  -> /
+    nested-component.js       -> /nested-component
+```
+
+
+**Do not forget to use [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) `renderRoutes` function in your wrappers !**  
 Otherwise your childs won't be rendered.
 
 ### Edge case
@@ -347,18 +359,11 @@ Otherwise your childs won't be rendered.
 
 ```
 pages/
-  wrapper.js
-  wrapper/
-    index.js
+  [id].js
+  [param]/
+    index.js -> this file will be ignored
 
-// wrapper.js would be available on url: /wrapper
-// index.js would also be available on url: /wrapper
 ```
-
-
-
-
-In those cases, `wrapper/index.js` would be ignored.
 
 - Avoid using different param names at the same level
 
