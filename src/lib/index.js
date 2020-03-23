@@ -1,3 +1,4 @@
+import React from 'react';
 import Promise from 'bluebird';
 import fs from 'fs';
 import path from 'path';
@@ -6,6 +7,7 @@ import _ from 'lodash';
 import fsu from './fs-utils';
 import stru from './str-utils';
 import tmplu from './tmpl-utils';
+import getCode from './babel';
 
 class Engine {
 
@@ -26,6 +28,8 @@ class Engine {
     }
 
 
+    this._keywords = options.keywords;
+    // this._parseComponent = options.ba
     // coma separated list of accepted extensions or undefined
     this._extensions = options.extensions;
     // folder that we need to analyse
@@ -45,6 +49,8 @@ class Engine {
       isNestedDir: false,
       hasDynamicFile: false,
     };
+
+    this._cache = {};
   }
 
   setExtentions(){
@@ -57,15 +63,32 @@ class Engine {
     const extensions = _.split(this._extensions, ',');
     const trimed = _.map(_.compact(extensions), (ext) => {
       return _.trim(ext);
-    })
+    });
     this._extensions = trimed;
+  }
+
+  setKeywords() {
+
+    if (!this._keywords) {
+      this._keywords = [];
+      return;
+    }
+
+    const keywords = _.split(this._keywords, ',');
+    const trimed = _.map(_.compact(keywords), (word) => {
+      return _.trim(word);
+    });
+
+    this._keywords = trimed;
+    this._shouldParse = _.size(trimed);
   }
 
   async run() {
 
     // get accepted files extensions
     this.setExtentions();
-    
+    this.setKeywords();
+
     // create uniq temporary directory
     this._tmpFolder = await fsu.createTmpDir();
 
@@ -112,6 +135,19 @@ class Engine {
     await this.run();
   }
 
+  handleCache(type, cmpPath) {
+
+    if (!this._shouldParse) {
+      return;
+    }
+
+    const absolutePath = path.resolve('.', cmpPath);
+
+    if (type === 'unlink' || type === 'change') {
+      delete this._cache[absolutePath];
+    }
+  }
+
   async watchDir() {
 
     // input dir must be a String path that points to a folder
@@ -146,6 +182,7 @@ class Engine {
               return resolve();
             }
 
+            this.handleCache(event, path);
             console.log(`[watch] '${event}' => ${path}`);
 
             // make sure we're not ready to run again if we catch another events
@@ -167,9 +204,7 @@ class Engine {
 
   async getAllRoutes(from) {
 
-    const routesObject = {
-      component: 'App.js',
-    };
+    const routesConfig = {};
 
     // make sure from points to a directory
     const isDir = await fsu.isDir(from);
@@ -179,9 +214,9 @@ class Engine {
     }
 
     const routes = await this.getRoutes(from, this._parentDirInfo);
-    routesObject.routes = routes;
+    routesConfig.routes = routes;
 
-    return routesObject;
+    return routesConfig;
   }
 
   // given a directory path and a list of filenames in it
@@ -464,6 +499,23 @@ class Engine {
     return [map, dynamicFileCount];
   }
 
+  async handleKeywords(absolutePath) {
+
+    if (!this._shouldParse) {
+      return {};
+    }
+
+    if (this._cache[absolutePath]) {
+      const scope = this._cache[absolutePath];
+      return scope;
+    }
+
+    const scope = await getCode(absolutePath, this._keywords);
+    this._cache[absolutePath] = scope;
+
+    return scope;
+  }
+
   async handleFiles(items) {
 
     const keepFiles = [];
@@ -475,9 +527,14 @@ class Engine {
 
       const item = items.files[name];
 
+      const p = path.resolve('.', item.filePath);
+
+      const scope = await this.handleKeywords(p);
+
       if (!item.hasNested) {
 
         const file = {
+          ...scope,
           score: item.score,
           componentPath: item.relativeFilePath,
           path: item.routePath,
@@ -500,6 +557,7 @@ class Engine {
       })
       const routes = await this.getRoutes(nestedFolder.filePath, dirInfo);
       const file = {
+        ...scope,
         score: item.score,
         componentPath: item.relativeFilePath,
         path: item.routePath,
