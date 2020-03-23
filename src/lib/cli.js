@@ -12,11 +12,13 @@ const start = async(args) => {
       outputDir: 'o',
       filename: 'f',
       templatesDir: 't',
+      keywords: 'k',
       watch: 'w'
     },
-    string: ['i', 'o', 'f', 'e'],
+    string: ['i', 'o', 'f', 'e', 'k'],
     boolean: ['w'],
     default: {
+      keywords: '',
       extensions: 'js',
       filename: 'routes.js',
       watch: false,
@@ -26,6 +28,7 @@ const start = async(args) => {
   const engine = new Engine({
     inputDir: options.intputDir,
     outputDir: options.outputDir,
+    keywords: options.keywords,
     watch: options.watch,
     filename: options.filename,
     templatesDir: options.templatesDir,
