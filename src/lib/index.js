@@ -204,9 +204,7 @@ class Engine {
 
   async getAllRoutes(from) {
 
-    const routesObject = {
-      component: 'App.js',
-    };
+    const routesConfig = {};
 
     // make sure from points to a directory
     const isDir = await fsu.isDir(from);
@@ -216,9 +214,9 @@ class Engine {
     }
 
     const routes = await this.getRoutes(from, this._parentDirInfo);
-    routesObject.routes = routes;
+    routesConfig.routes = routes;
 
-    return routesObject;
+    return routesConfig;
   }
 
   // given a directory path and a list of filenames in it
