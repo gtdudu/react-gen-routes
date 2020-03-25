@@ -1,5 +1,5 @@
 
-<p align="center">react-gen-routes</p>
+<h3 align="center">react-gen-routes</h3>
 <p align="center">
   <a href="https://github.com/gtdudu/react-gen-routes#licence">
     <img src="https://img.shields.io/badge/licence-MIT-green" alt="Licence">
