@@ -1,8 +1,43 @@
-# @lmdc/react-gen-routes
+
+<p align="center">react-gen-routes</p>
+<p align="center">
+  <a href="https://github.com/gtdudu/react-gen-routes#licence">
+    <img src="https://img.shields.io/badge/licence-MIT-green" alt="Licence">
+  </a>
+  <a href="https://github.com/gtdudu/react-gen-routes">
+    <img src="https://img.shields.io/github/last-commit/gtdudu/react-gen-routes" alt="Last update">
+  </a>
+  <a href="https://github.com/gtdudu/react-gen-routes">
+    <img src="https://img.shields.io/github/v/tag/gtdudu/react-gen-routes" alt="Current version">
+    </a>
+</p>
+
+#
 
 An easy way to manage client routing for react app similar to the one in [next.js](https://github.com/zeit/next.js).  
 Automates creation of [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) config file based on file tree.  
 Automatic reloading on file system events.
+
+
+# Table of contents
+- [Why](#why)
+- [Installation](#installation)
+- [Usage](#usage)
+  * [Enable logs](#enable-logs)
+  * [Using --templatesDir option](#using---templatesdir-option)
+  * [Using --watch option](#using---watch-option)
+  * [Using --keywords option](#using---keywords-option)
+- [Name convention](#name-convention)
+  * [Accepted names](#accepted-names)
+  * [Dynamic file and folder](#dynamic-file-and-folder)
+- [Routing](#routing)
+  * [Creating a static route](#creating-a-static-route)
+  * [Creating a dynamic route](#creating-a-dynamic-route)
+  * [Creating a catch all route](#creating-a-catch-all-route)
+  * [Creating nested routes](#creating-nested-routes)
+- [Edge cases](#edge-cases)
+- [Contribute](#contribute)
+- [License](#license)
 
 
 ## Why
@@ -28,9 +63,6 @@ So why use this ?
 Only through cloning with git for now.  
 Npm package coming as soon as i have some tests set up.
 
-## Enable logs
-
-You need to set `DEBUG` env var to `rgr` to enable logs.
 
 ## Usage
 
@@ -48,6 +80,9 @@ You need to set `DEBUG` env var to `rgr` to enable logs.
   - -w or --watch: boolean, set to true for automatic recomputing of config file on inputDir file system events (via chokidar), default to false
   - -k or --keywords: coma separated list of function names to search for in each component
 
+### Enable logs
+
+You need to set `DEBUG` env var to `rgr` to enable logs.
 
 ### Using --templatesDir option
 
@@ -164,33 +199,22 @@ You must ensure your `.babelrc` has all the plugins and presets needed.
 
 If watch mode is on, the results will be cached to enhance performance.
 
-### npm prebuild script
-
-```
-"prebuild": "lmdc-rgr -o ./src/shared/ -i ./src/shared/pages -f my-routes.js",
-
-```
 
 ## Name convention
 
-You cannot name a file `*.js` nor a folder `*`.  
+### Accepted names
+
+**You cannot name a file `*.js` nor a folder `*`.**  
 If you do they will be ignored.
 
-Furthermore, all filenames with more than one dot will be ignored while constructing routes file.
+Furthermore, all **filenames with more than one dot will be ignored** while constructing routes file.
 
 ```
 pages/
   component.js            -> this is ok
   component.styles.js     -> this will be ignored
 ```
-
-
-## Routing
-
-This section assumes you use `--inputDir ./pages`
-
-
-### Dynamic file/folder
+### Dynamic file and folder
 
 We need to distinguish dynamic file/folder from non-dynamic file/folder.  
 If this sounds complicated, trust me, it's not.  
@@ -211,6 +235,12 @@ n[op].js
 [no]p.js
 ...
 ````
+
+
+
+## Routing
+
+This section assumes you use `--inputDir ./pages`
 
 ### Creating a static route
 
@@ -357,7 +387,7 @@ pages/
 **Do not forget to use [react-router-config](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config) `renderRoutes` function in your wrappers !**  
 Otherwise your childs won't be rendered.
 
-### Edge case
+### Edge cases
 
 - Files implying duplicate routes will be ignored.
 
@@ -397,3 +427,11 @@ pages/
 `a.js` would resolve to `/:id/a`
 
 It's virtually the same thing but you don't have to track two different names for the same params.
+
+# Contribute
+
+If you have any idea to improve this project or any problem using it, feel free to open an [issue](https://github.com/gtdudu/react-gen-routes/issues).
+
+# License
+
+This project was developed by Tommy DURAND and is released under the MIT License.
