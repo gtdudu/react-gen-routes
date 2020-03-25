@@ -28,7 +28,7 @@ So why use this ?
 Only through cloning with git for now.  
 Npm package coming as soon as i have some tests set up.
 
-## Enbale logs
+## Enable logs
 
 You need to set `DEBUG` env var to `rgr` to enable logs.
 
