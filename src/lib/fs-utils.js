@@ -4,8 +4,10 @@ import readline from 'readline';
 import fs from 'fs';
 import _ from 'lodash';
 import os from 'os';
+import debug from 'debug'
 
 Promise.promisifyAll(fs);
+const logger = debug('rgr');
 
 // ##############
 // FILE HELPERS #
@@ -118,7 +120,7 @@ export async function ls(from) {
   try {
     files = await fs.readdirAsync(from);
   } catch (e) {
-    console.log(e);
+    logger(e);
   }
 
   return files || [];
@@ -137,7 +139,7 @@ export async function lsDir(from) {
     try {
       isDir = await exports.isDir(check);
     } catch (e) {
-      console.log('lsDir error', error);
+      logger('lsDir error', error);
     }
 
     return isDir && item;

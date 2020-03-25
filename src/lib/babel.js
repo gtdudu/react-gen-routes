@@ -1,7 +1,9 @@
 import traverse from '@babel/traverse';
 import _ from 'lodash';
 import path from 'path';
+import debug from 'debug'
 
+const logger = debug('rgr');
 
 async function getCode(file, keywords = []) {
 
@@ -42,7 +44,7 @@ async function getCode(file, keywords = []) {
     });
 
   } catch (e) {
-    console.log('getCode error', e);
+    logger('getCode error', e);
     return;
   }
 

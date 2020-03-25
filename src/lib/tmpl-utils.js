@@ -2,8 +2,11 @@ import _ from 'lodash';
 import path from 'path';
 import ejs from 'ejs';
 import Promise from 'bluebird';
+import debug from 'debug'
 
 import fsu from './fs-utils';
+
+const logger = debug('rgr');
 
 // transform json string in js string
 // improves output readability in ide
@@ -48,7 +51,7 @@ export async function fillRoutesTemplate(tmpDir, templateDir) {
   try {
     importsLines = await fsu.getFileLines(root, 'imports');
   } catch (e) {
-    console.log('Could not find imports template file');
+    logger('Could not find imports template file');
     throw e;
   }
 
@@ -56,7 +59,7 @@ export async function fillRoutesTemplate(tmpDir, templateDir) {
   try {
     templatedLines = await fsu.getFileLines(root, 'component');
   } catch (e) {
-    console.log('Could not find component template file');
+    logger('Could not find component template file');
     throw e;
   }
 
@@ -103,7 +106,6 @@ export async function fillRoutesTemplate(tmpDir, templateDir) {
 
   // tweek export
   res[0] = `const routes = {`
-  // console.log(outputFile);
   res.push('\nexport default routes;');
 
   const lines = [

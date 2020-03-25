@@ -35,13 +35,7 @@ const start = async(args) => {
     extensions: options.extensions,
   });
 
-  try {
-    await engine.run();
-    console.log('All good: routes.js has been generated');
-  } catch (e) {
-    console.log('engine failed to run', e);
-  }
-
+  await engine.safeRun();
 };
 
 start();

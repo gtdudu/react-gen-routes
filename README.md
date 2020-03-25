@@ -28,6 +28,10 @@ So why use this ?
 Only through cloning with git for now.  
 Npm package coming as soon as i have some tests set up.
 
+## Enbale logs
+
+You need to set `DEBUG` env var to `rgr` to enable logs.
+
 ## Usage
 
 `lmdc-rgr [args]`

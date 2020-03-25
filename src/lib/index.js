@@ -2,11 +2,15 @@ import Promise from 'bluebird';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
+import debug from 'debug'
 
 import fsu from './fs-utils';
 import stru from './str-utils';
 import tmplu from './tmpl-utils';
 import getCode from './babel';
+
+
+const logger = debug('rgr');
 
 class Engine {
 
@@ -82,6 +86,16 @@ class Engine {
     this._shouldParse = _.size(trimed);
   }
 
+  async safeRun() {
+
+    try {
+      await this.run();
+      logger('All good: routes.js has been generated');
+    } catch (e) {
+      logger('engine failed to run', e);
+    }
+  }
+
   async run() {
 
     // get accepted files extensions
@@ -120,7 +134,7 @@ class Engine {
     // if we're not already watching for changes in inputDir, start watch
     if (!this.watching) {
       await this.watchDir();
-      console.log('Watching for changes...');
+      logger('Watching for changes...');
     }
 
     // nothing changed while we were running, return
@@ -129,7 +143,7 @@ class Engine {
     }
 
     // we received a change event while we were already runing, start over
-    console.log('DEBUG: run is over but got event in the meantime! re running');
+    logger('DEBUG: run is over but got event in the meantime! re running');
     this.shouldRerun = false;
     await this.run();
   }
@@ -182,7 +196,7 @@ class Engine {
             }
 
             this.handleCache(event, path);
-            console.log(`[watch] '${event}' => ${path}`);
+            logger(`[watch] '${event}' => ${path}`);
 
             // make sure we're not ready to run again if we catch another events
             if (!this.ready) {
@@ -192,12 +206,12 @@ class Engine {
 
             this.ready = false;
             await this.run();
-            console.log('# routes.js has been regenerated');
+            logger('# routes.js has been regenerated');
           })
         ;
       })
     } catch (err) {
-      console.log('[watch]: ', err);
+      logger('[watch]: ', err);
     }
   }
 
@@ -352,7 +366,7 @@ class Engine {
 
       // prevent files and folders named * as they would create conflicting routes
       if (item.nameNoExt === '*') {
-        console.log(`skipping '${item.filePath}' (* is a forbidden name).`);
+        logger(`skipping '${item.filePath}' (* is a forbidden name).`);
         return;
       }
 
@@ -361,7 +375,7 @@ class Engine {
       try {
         d.isDynamic = stru.isDynamic(d.nameNoExt);
       } catch (e) {
-        console.log(`skipping file '${item.filePath}' (invalid name).`);
+        logger(`skipping file '${item.filePath}' (invalid name).`);
         return;
       }
 
@@ -373,7 +387,7 @@ class Engine {
       //  [param]
       //    index.js  -> /test/:param
       if (d.nameNoExt === 'index' && parentDirInfo.hasDynamicFile && parentDirInfo.isDynamicDir) {
-        console.log(`skipping file ${item.filePath} (conflict with parent folder dynamic file)`);
+        logger(`skipping file ${item.filePath} (conflict with parent folder dynamic file)`);
         return;
       }
 
@@ -383,7 +397,7 @@ class Engine {
         // skip dynamic folder if we already have one in directory
         // We could merge both folder and check for conflicts but seems to me that the price is low compared to the loss of clarity
         if (dynamicFolderCount > 1) {
-          console.log(`skipping folder '${item.filePath}' (dynamic folder already exists).`);
+          logger(`skipping folder '${item.filePath}' (dynamic folder already exists).`);
           return;
         }
       }
@@ -396,7 +410,7 @@ class Engine {
         //   [a].js -> /test/:a
         //   [b].js -> /test/:b
         if (dynamicFileCount > 1) {
-          console.log(`skipping file '${item.filePath}' (dynamic file already exists).`);
+          logger(`skipping file '${item.filePath}' (dynamic file already exists).`);
           return;
         }
       }
@@ -416,7 +430,7 @@ class Engine {
       // skip empty folder
       // this if is mainly for debug as it would make no difference to remove it
       if (!await fsu.hasFiles(item.filePath)) {
-        console.log(`skipping folder '${item.filePath}' (empty folder).`);
+        logger(`skipping folder '${item.filePath}' (empty folder).`);
         return;
       }
 
@@ -437,7 +451,7 @@ class Engine {
         }
 
         const type = info.isDir ? 'folder' : 'file';
-        console.log(`skipping ${type} ${info.filePath} (nested index would prevent this route from ever being reached)`);
+        logger(`skipping ${type} ${info.filePath} (nested index would prevent this route from ever being reached)`);
         return
       });
 
