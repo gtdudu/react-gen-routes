@@ -14,33 +14,47 @@ async function getCode(file, keywords = []) {
       .transformFileAsync(file, {
         code: false,
         ast: true,
-        babelrc: true,
-        babelrcRoots: [
-          path.resolve('.'),
-        ]
+        babelrc: false,
+        configFile: path.join(__dirname, '../babel.config.json'),
       })
     ;
 
-    let hasGetInitialData = false;
-    const visitor = function(path) {
+    const exportNamedVisitor = function(path) {
 
-      if (!path.node || !path.node.id || !path.node.id.name) {
+      if (!path.node || !path.node.declaration) {
         return;
       }
 
-      const record = path.node.id.name;
-      if (!_.includes(keywords, record)) {
+      if (path.node.declaration.type === 'FunctionDeclaration') {
+        const check = path.node.declaration.id.name;
+        if (!_.includes(keywords, check)) {
+          return;
+        }
+
+        this[check] = true;
         return;
       }
 
-      this[record] = true;
-      // this.hasGetInitialData = path.node.id.name === 'getInitialData';
+      if (path.node.declaration.type === 'VariableDeclaration') {
+        // declarations should always exist but better be safe than sorry
+        const declarations = _.get(path.node, 'declaration.declarations', []);
+        const first = _.first(declarations);
+        if (!first) {
+          return;
+        }
+
+        const check = first.id.name;
+        if (!_.includes(keywords, check)) {
+          return;
+        }
+
+        this[check] = true;
+        return;
+      }
     }
 
-    const bindedVisitor = _.bind(visitor, scope);
-
     traverse(ast, {
-      FunctionDeclaration: bindedVisitor
+      ExportNamedDeclaration: _.bind(exportNamedVisitor, scope),
     });
 
   } catch (e) {
