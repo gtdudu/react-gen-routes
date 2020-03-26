@@ -78,7 +78,7 @@ Npm package coming as soon as i have some tests set up.
   - -f or --filename: whatever you want the config file to be named, default to `routes.js`
   - -t or --templatesDir: path to `component` and `imports` templates folder
   - -w or --watch: boolean, set to true for automatic recomputing of config file on inputDir file system events (via chokidar), default to false
-  - -k or --keywords: coma separated list of function names to search for in each component
+  - -k or --keywords: coma separated list of exports to search for in each component
 
 ### Enable logs
 
@@ -145,7 +145,8 @@ npm i --save-dev wait-on
 
 ### Using --keywords option
 
-If set, each component file will be parsed using babel (using your project .babelrc) and a flag will be set in each route object for each exported functions that are included in keywords.
+If set, each component file will be parsed using babel and a flag will be set in each route object for each exported variable that is included in keywords.  
+Files will be parsed using preset `"@babel/preset-react",`.
 
 For, instance:
 
@@ -194,8 +195,11 @@ export default routes;
 
 This is especially useful if you want to wrap your routes config to handle data fetching automatically without having to use a lib like [react-async](https://www.npmjs.com/package/react-async) in each component!
 
-**Babel must be able to parse your files**.  
-You must ensure your `.babelrc` has all the plugins and presets needed.
+This can also be used to do statical analysis on routes file afterward.
+
+**Babel must be able to parse your files**.
+
+You should check for es6 support for your node version before using this ([node-green](https://node.green/))
 
 If watch mode is on, the results will be cached to enhance performance.
 
