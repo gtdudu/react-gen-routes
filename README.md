@@ -60,9 +60,9 @@ So why use this ?
 
 ## Installation
 
-Only through cloning with git for now.  
-Npm package coming as soon as i have some tests set up.
-
+```
+npm install --save-dev @gtdudu/react-gen-routes
+```
 
 ## Usage
 

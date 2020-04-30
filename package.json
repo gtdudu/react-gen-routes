@@ -1,6 +1,6 @@
 {
   "name": "@gtdudu/react-gen-routes",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Generate config for react-router-config based on directory architecture",
   "bin": {
     "gt-rgr": "./bin/index.js"
