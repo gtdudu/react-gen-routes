@@ -1,5 +1,5 @@
 
-<h3 align="center">react-gen-routes</h3>
+<h3 align="center">@gtdudu/react-gen-routes</h3>
 <p align="center">
   <a href="https://github.com/gtdudu/react-gen-routes#licence">
     <img src="https://img.shields.io/badge/licence-MIT-green" alt="Licence">
@@ -66,7 +66,7 @@ Npm package coming as soon as i have some tests set up.
 
 ## Usage
 
-`lmdc-rgr [args]`
+`gt-rgr [args]`
 
 * Mandatory args:
 
@@ -132,7 +132,7 @@ I tend to use this:
 // In packages.json scripts
 
 "dev": "concurrently -r \"npm:watch:server\" \"npm:watch:routes\"",
-"watch:routes": "lmdc-rgr -o ./src/shared -i ./src/shared/pages -w -f my-routes.js",
+"watch:routes": "gt-rgr -o ./src/shared -i ./src/shared/pages -w -f my-routes.js",
 "watch:server": "wait-on ./src/shared/my-routes.js && [start server/nodemon/whatever here]",
 
 // don't forget to install deps
@@ -145,7 +145,11 @@ npm i --save-dev wait-on
 
 ### Using --keywords option
 
-If set, each component file will be parsed using babel and a flag will be set in each route object for each exported variable that is included in keywords.  
+If set, each component file will be parsed using babel to search for exported variables matching values in keywords list.
+
+If keyword references a function a boolean flag will be set on the route object.
+If keyword references a Boolean, Integer, String, or an array of the above, value will be extracted and set on the route object.
+
 Files will be parsed using preset `"@babel/preset-react",`.
 
 For, instance:
@@ -168,12 +172,14 @@ export default Home() {
   );
 }
 
+export roles = ['admin', 'user'];
+
 export function getInitialData() {
 
 }
 ```
 
-if you run with `-k getInitialData` then the routes config will be:
+if you run with `-k getInitialData,roles` then the routes config will be:
 
 ```
 import loadable from '@loadable/component';
@@ -182,6 +188,7 @@ import loadable from '@loadable/component';
 const routes = {
   routes: [
     {
+      roles: ['admin', 'user'],
       getInitialData: true,
       component: loadable(props => import('...relativePathToCmp here...')),
       path: '/',
@@ -194,6 +201,8 @@ export default routes;
 ```
 
 This is especially useful if you want to wrap your routes config to handle data fetching automatically without having to use a lib like [react-async](https://www.npmjs.com/package/react-async) in each component!
+
+It's also convenient to wrap authentication and authorisation.
 
 This can also be used to do statical analysis on routes file afterward.
 

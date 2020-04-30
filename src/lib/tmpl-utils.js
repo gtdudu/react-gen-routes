@@ -15,6 +15,11 @@ export function getJsString(str) {
   let count = 0;
   let tmp = [];
 
+  const check = _.split(str, ':');
+  if (_.size(check) < 2) {
+    return str.replace(/"/g, "'");
+  }
+
   for (var i = 0; i < str.length; i++) {
 
     if(count < 2 && str[i] === '"') {

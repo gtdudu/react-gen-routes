@@ -5,6 +5,31 @@ import debug from 'debug'
 
 const logger = debug('rgr');
 
+function extractValue(declaration) {
+
+  switch (declaration.init.type) {
+    case 'BooleanLiteral':
+    case 'NumericLiteral':
+    case 'StringLiteral':
+      return declaration.init.value;
+    case 'ArrayExpression': {
+      const elements = declaration.init.elements;
+      const arr = [];
+      _.each(elements, (element) => {
+        if (element.type !== 'BooleanLiteral' && element.type !== 'NumericLiteral' && element.type !== 'StringLiteral') {
+          return;
+        }
+        arr.push(element.value);
+      });
+
+      return arr;
+    }
+    default:
+      logger(`unhandle type: ${declaration.init.type}`);
+  }
+}
+
+
 async function getCode(file, keywords = []) {
 
   const scope = {};
@@ -38,6 +63,7 @@ async function getCode(file, keywords = []) {
       if (path.node.declaration.type === 'VariableDeclaration') {
         // declarations should always exist but better be safe than sorry
         const declarations = _.get(path.node, 'declaration.declarations', []);
+
         const first = _.first(declarations);
         if (!first) {
           return;
@@ -48,7 +74,7 @@ async function getCode(file, keywords = []) {
           return;
         }
 
-        this[check] = true;
+        this[check] = extractValue(first);
         return;
       }
     }
