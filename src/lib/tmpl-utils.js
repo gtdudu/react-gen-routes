@@ -94,11 +94,21 @@ export async function fillRoutesTemplate(tmpDir, templateDir) {
       value :
       `./${value}`
     ;
+    const split = _.split(relativePath, '/');
+    const componentRootPath = _.join(_.slice(split, 0, _.size(split) - 1), '/');
+    const filename = _.last(split);
+    const splitFilename = _.split(filename, '.')
+    const name = _.join(_.slice(splitFilename, 0, _.size(splitFilename) - 1), '.');
+    const extension = _.last(splitFilename);
 
     _.each(templates, (template) => {
       // process template file
       const templatedLine = template({
         componentPath: relativePath,
+        componentRootPath,
+        filename,
+        name,
+        extension
       });
       // add spaces back
       let spaces = '';
