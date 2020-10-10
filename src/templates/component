@@ -1,1 +1,2 @@
 component: loadable(props => import('<%= componentPath %>')),
+i18n: loadable(props => import(`<%= componentRootPath %>/<%= name %>.i18n.${props.language}.js`)),
